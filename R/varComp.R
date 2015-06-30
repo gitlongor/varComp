@@ -927,7 +927,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
   if(is.null(nm)) nm = if(nK>0L) paste('varComp', seq_along(K), sep='.') else character(0L)
   ans=list(
 	## varComp.fit specific block
-	parms=structure(tau, names=nm, candidates = candidates),
+	parms=structure(tau, names=nm),
 	gradients=structure(-negGrad, names=nm), 
 	hessian=structure(hess(tau), dimnames=list(nm,nm)),
 	sigma2=drop(sigma2), 

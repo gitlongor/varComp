@@ -31,6 +31,11 @@ as.mpolyList.list=function(x, ...)
 	class(x)='mpolyList'
 	x
 }
+as.mpolyList.mpoly = function(x, ...)
+{
+	structure(list(x), class='mpolyList')
+}
+
 
 '^.mpolyList' = function(e1, e2)
 {

@@ -13,6 +13,8 @@ Functions controlling the model fitting of varComp
 \usage{
 varComp.control(verbose = FALSE, start = NULL, REML = TRUE, 
                information = informationTypes, boundary.eps = 5e-04, 
+			   eigenvalue.eps = sqrt(.Machine$double.eps), 
+			   imaginary.eps = sqrt(.Machine$double.eps), 			   
 			   nlminb = nlminb.control(iter.max = 200L, eval.max = 500L), 
 			   plot.it = FALSE, keepXYK = TRUE)
 nlminb.control(eval.max = 200L, iter.max = 150L, trace = 0L, abs.tol = 0, 
@@ -36,6 +38,10 @@ informationTypes
 }
   \item{boundary.eps}{
 	A small positive number. If the parameter estimates fall below this number, additional checking will be performed to examine if the parameter estimate hits the lower boundary (0) of the parameter space. 
+}
+  \itme{eigenvalue.eps}{A small positive number. This is only used when \code{optMethod='polyroot'}. Eigenvalues of any covariance matrix smaller than \code{eigenvalue.eps} will be treated as zero. 
+}
+  \itme{imaginary.eps}{A small positive number. This is only used when \code{optMethod='polyroot'}. If absolute imaginary part of a polynomial root is less than \code{imaginary.eps}, the root will be treated as a real number. 
 }
   \item{nlminb}{
 	A list of arguments to be passed to \code{\link[stats:nlminb]{stats::nlminb}}. This is most conveniently specified through \code{\link{nlminb.control}}. 

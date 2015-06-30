@@ -94,6 +94,7 @@ commonDenom=function(numList, denomList, ...) ## need to optimize for speed
 {  
 	n=length(numList)
 	stopifnot(n ==length(denomList))
+	if(n==1) return(as.qmpolyList(numList, denomList))
 	num.ans = mpoly(list(c(coef=0)))
 	for(i in seq(n)){
 		num.ans = num.ans + numList[[i]] * product(as.mpolyList(denomList[-i]))

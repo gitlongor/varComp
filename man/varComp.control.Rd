@@ -11,7 +11,8 @@ Functions controlling the model fitting of varComp
 \code{varComp.control} provides detailed control of model fitting for \code{\link{varComp}}. \code{nlminb.control} provides detailed control of the optimization procedure. \code{informationTypes} is a character vector containing the types of information matrices.
 }
 \usage{
-varComp.control(verbose = FALSE, start = NULL, REML = TRUE, 
+varComp.control(optMethod=c('nlminb','polyroot'), 
+               verbose = FALSE, start = NULL, REML = TRUE, 
                information = informationTypes, boundary.eps = 5e-04, 
 			   eigenvalue.eps = sqrt(.Machine$double.eps), 
 			   imaginary.eps = sqrt(.Machine$double.eps), 
@@ -24,6 +25,9 @@ informationTypes
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
+  \item{optMethod}{
+    A character scalar, with value of either \code{'nlminb'} or \code{'polyroot'}. This specifies the routines/method of maximizing profiled residual log likelihood function. When \code{optMethod='polyroot'}, global maximization will be performed; otherwise, usual local optimization will be performed with a starting value. Currently, \code{optMethod='polyroot'} is only allowed when there is a single random components other than the residual error. 
+}
   \item{verbose}{
 	A logical scalar, indicating whether excessive messages are printed. 
 }

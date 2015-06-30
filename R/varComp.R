@@ -25,12 +25,12 @@ nlminb.control=function(
 	, class = 'nlminb.control')
 }
 
-varComp.control=function(verbose = FALSE, start=NULL, REML = TRUE, 
+varComp.control=function(optMethod=c('nlminb','polyroot'), verbose = FALSE, start=NULL, REML = TRUE, 
 information=informationTypes, boundary.eps=5e-4, eigenvalue.eps = sqrt(.Machine$double.eps), imaginary.eps = sqrt(.Machine$double.eps), 
   nlminb=nlminb.control(iter.max=200L, eval.max=500L), 
   plot.it=FALSE, keepXYK=TRUE)
 {	optMethods=c('nlminb', 'optim', 'NRGD', 'polyroot')
-	optMethod=optMethods[match('nlminb', optMethods)]
+	optMethod=match.arg(optMethod[1], optMethods)
 	structure(
 	  list(optMethod=optMethod,
 		 verbose=verbose, 
@@ -419,7 +419,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
   
   last.tau=tau=if(is.null(starts) && optMethod!='polyroot') {
 	minque(y, k, rep(0,nK), lower.bound=.Machine$double.eps^.5, restricted=TRUE)
-  }else rep(starts, length=nK)
+  }else rep(if(is.null(starts)) 0 else starts, length=nK)
   ltau=log(max(.Machine$double.eps, tau))
   
   if(nK != 1 && optMethod == 'polyroot'){
@@ -541,7 +541,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 		}else{
 			tau = 0
 		}
-		attr(tau, 'candidates') = candidates
+		attr(tau, 'all.candidates') = candidates
   }else stop('Method not implemented')
   
 
@@ -610,6 +610,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
   names(tau)=nm
   vc = drop(tau*sigma2)
   names(vc)=nm
+  if(optMethod=='polyroot') attr(vc,'all.candidates')=drop(candidates*sigma2)
   ans=list(
 	## varComp.fit specific block
 	parms=tau, 

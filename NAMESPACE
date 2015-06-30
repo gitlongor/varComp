@@ -1,4 +1,5 @@
 import(stats)
+import(mpoly)
 importFrom(quadprog, solve.QP)
 importFrom(nlme, fixef, fixed.effects)
 importFrom(Matrix, nearPD)

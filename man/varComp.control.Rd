@@ -39,9 +39,9 @@ informationTypes
   \item{boundary.eps}{
 	A small positive number. If the parameter estimates fall below this number, additional checking will be performed to examine if the parameter estimate hits the lower boundary (0) of the parameter space. 
 }
-  \itme{eigenvalue.eps}{A small positive number. This is only used when \code{optMethod='polyroot'}. Eigenvalues of any covariance matrix smaller than \code{eigenvalue.eps} will be treated as zero. 
+  \item{eigenvalue.eps}{A small positive number. This is only used when \code{optMethod='polyroot'}. Eigenvalues of any covariance matrix smaller than \code{eigenvalue.eps} will be treated as zero. 
 }
-  \itme{imaginary.eps}{A small positive number. This is only used when \code{optMethod='polyroot'}. If absolute imaginary part of a polynomial root is less than \code{imaginary.eps}, the root will be treated as a real number. 
+  \item{imaginary.eps}{A small positive number. This is only used when \code{optMethod='polyroot'}. If absolute imaginary part of a polynomial root is less than \code{imaginary.eps}, the root will be treated as a real number. 
 }
   \item{nlminb}{
 	A list of arguments to be passed to \code{\link[stats:nlminb]{stats::nlminb}}. This is most conveniently specified through \code{\link{nlminb.control}}. 

@@ -735,7 +735,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	WAI=expression({updateNums2();   })
   )
   
-  last.tau=tau=if(is.null(starts)) {
+  last.tau=tau=if(is.null(starts) && optMethod!='polyroot') {
 	minque(y, k, rep(0,nK), lower.bound=.Machine$double.eps^.5, restricted=TRUE)
   }else rep(starts, length=nK)
   ltau=log(max(.Machine$double.eps, tau))
@@ -838,8 +838,8 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	  sum1 = summation(sum1.qmpolyList)
 	  sum23 = sum2 * sum3
 	  ans = sum1 - sum23
-	  degree = sapply(ans$numerator, '[','tau'); degree[is.na(degree)]=0
-	  polyCoefs = sapply(ans$numerator, '[','coef')[order(degree)]
+	  degree = sapply(ans$numerator[[1L]], '[','tau'); 
+	  polyCoefs = sapply(ans$numerator[[1L]], '[','coef')[order(degree,na.last=FALSE)]
 
 	  roots = polyroot(polyCoefs)
 	  candidates = Re(roots)[Re(roots)>=0 & abs(Im(roots)) < .Machine$double.eps^.5]

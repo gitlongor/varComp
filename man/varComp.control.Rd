@@ -14,7 +14,7 @@ Functions controlling the model fitting of varComp
 varComp.control(verbose = FALSE, start = NULL, REML = TRUE, 
                information = informationTypes, boundary.eps = 5e-04, 
 			   eigenvalue.eps = sqrt(.Machine$double.eps), 
-			   imaginary.eps = sqrt(.Machine$double.eps), 			   
+			   imaginary.eps = sqrt(.Machine$double.eps), 
 			   nlminb = nlminb.control(iter.max = 200L, eval.max = 500L), 
 			   plot.it = FALSE, keepXYK = TRUE)
 nlminb.control(eval.max = 200L, iter.max = 150L, trace = 0L, abs.tol = 0, 

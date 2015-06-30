@@ -10,3 +10,5 @@ Imports: quadprog, Matrix, MASS, CompQuadForm, RLRsim, SPA3G, mvtnorm, nlme, sta
 LazyData: no
 ByteCompile: yes
 License: GPL-3
+URL: https://github.com/gitlongor/varComp
+BugReports: https://github.com/gitlongor/varComp/issues

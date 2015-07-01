@@ -1,3 +1,8 @@
+trimZeros=function(vec)
+{
+  nzeros=sum(cumsum(abs(rev(vec)))==0)
+  if(nzeros>0) vec[-seq(length(vec), length=nzeros, by=-1L)] else vec
+}
 
 eigenPolyRoot=function(co, only.real=FALSE)
 {

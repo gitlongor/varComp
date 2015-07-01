@@ -1,7 +1,7 @@
 constructConstPolyList=function(coefs)
 {
 	ans=do.call(polylist, as.list(coefs)) 
-	class(ans)='mpolyList' ## class polylist
+	class(ans)=c('mpolyList', 'polylist','list')
 	ans
 }
 constructLinearPolyList=function(const.coefs=0, linear.coefs=rep(0, length(const.coefs)), linear.name='x')
@@ -15,7 +15,7 @@ constructLinearPolyList=function(const.coefs=0, linear.coefs=rep(0, length(const
 	oneX = polynomial(0:1)
 	lin = lapply( constructConstPolyList(linear.coefs), "*", oneX)
 	ans = mapply("+", const, lin, SIMPLIFY=FALSE)
-	class(ans)='mpolyList'
+	class(ans)=c('mpolyList', 'polylist','list')
 	ans
 }
 
@@ -27,46 +27,49 @@ as.mpolyList.numeric=function(x, ...)
 as.mpolyList.list=function(x, ...)
 {
 	stopifnot(all(sapply(x, is.polynomial)))
-	class(x)='mpolyList'
+	class(x)=c('mpolyList','polylist','list')
 	x
 }
 as.mpolyList.polynomial = function(x, ...)
 {
-	structure(list(x), class='mpolyList')
+	structure(list(x), class=c('mpolyList','polylist','list'))
 }
-
+c.mpolyList=function(...)
+{
+	structure(polynom:::c.polylist(...), class=c('mpolyList', 'polylist','list'))
+}
 
 '^.mpolyList' = function(e1, e2)
 {
 	stopifnot(is.numeric(e2) && length(e2)==1L)
-	structure(lapply(e1, "^", e2), class="mpolyList")
+	structure(lapply(e1, "^", e2), class=c('mpolyList','polylist','list'))
 }
 	'*.mpolyList' = function(e1, e2) ## needed for polynom package
 	{
 		if(is.numeric(e2) || is.polynomial(e2)) {
 			e2 = as.polynomial(e2)
-			structure(lapply(e1, "*", e2), class="mpolyList")
+			structure(lapply(e1, "*", e2), class=c('mpolyList','polylist','list'))
 		}else if(inherits(e2, 'mpolyList')){
 			l1=length(e1); l2=length(e2)
 			if(l1!=l2){
 				L=max(c(l1,l2))
 				e1=rep(e1, length.out=L); e2=rep(e2, length.out=L)
 			}
-			structure(mapply("*", e1, e2, SIMPLIFY=FALSE), class='mpolyList')
+			structure(mapply("*", e1, e2, SIMPLIFY=FALSE), class=c('mpolyList','polylist','list'))
 		}else stop('unknown e2 class')
 	}
 	'+.mpolyList' = function(e1, e2) ## needed for polynom package
 	{
 		if(is.numeric(e2) || is.polynomial(e2)) {
 			e2 = as.polynomial(e2)
-			structure(lapply(e1, "+", e2), class="mpolyList")
+			structure(lapply(e1, "+", e2), class=c('mpolyList','polylist','list'))
 		}else if(inherits(e2, 'mpolyList')){
 			l1=length(e1); l2=length(e2)
 			if(l1!=l2){
 				L=max(c(l1,l2))
 				e1=rep(e1, length.out=L); e2=rep(e2, length.out=L)
 			}
-			structure(mapply("+", e1, e2, SIMPLIFY=FALSE), class='mpolyList')
+			structure(mapply("+", e1, e2, SIMPLIFY=FALSE), class=c('mpolyList','polylist','list'))
 		}else stop('unknown e2 class')
 	}
 
@@ -101,10 +104,10 @@ commonDenom=function(numList, denomList, ...) ## need to optimize for speed
 	stopifnot(n ==length(denomList))
 	if(n==1) return(as.qmpolyList(numList, denomList))
 	num.ans = polynomial(0)
+	denom.ans = LCM(denomList)
 	for(i in seq(n)){
-		num.ans = num.ans + numList[[i]] * product(as.mpolyList(denomList[-i]))
+		num.ans = num.ans + numList[[i]] * (denom.ans / denomList[[i]])
 	}
-	denom.ans = product(denomList)
 	as.qmpolyList(as.mpolyList(num.ans), as.mpolyList(denom.ans))
 }
 

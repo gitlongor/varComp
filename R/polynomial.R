@@ -102,3 +102,22 @@ commonDenom=function(numList, denomList, ...) ## need to optimize for speed
 	denom.ans = product(denomList)
 	as.qmpolyList(as.mpolyList(num.ans), as.mpolyList(denom.ans))
 }
+
+
+degree=function(x,...)UseMethod('degree')
+degree.mpoly=function(x,...)
+{
+	nms=setdiff(unlist(lapply(x,names)), 'coef')
+	if(length(nms)==0L) {
+		rep(0, length(x))
+	}else if(length(nms)==1L){
+		ans = sapply(x, '[',nms)
+		ans[is.na(ans)]=0
+		ans
+	}else .NotYetImplemented()
+}
+
+coef.mpoly = function(x, ...)
+{
+	sapply(x, '[','coef')
+}	

@@ -92,51 +92,11 @@ linear.polylist=function(const.coefs=0, linear.coefs=rep(0, length(const.coefs))
 	const.polylist(const.coefs) + const.polylist(linear.coefs) * rep(polynomial(0:1), L1)
 }
 
-if(FALSE){
-	as.mpolyList = function(x, ...) UseMethod("as.mpolyList")
-	as.mpolyList.numeric=function(x, ...)
-	{
-		do.call('constructLinearPolyList', list(const.coefs=x, ...))
-	}
-	as.mpolyList.list=function(x, ...)
-	{
-		stopifnot(all(sapply(x, is.polynomial)))
-		class(x)=c('mpolyList','polylist','list')
-		x
-	}
-	as.mpolyList.polynomial = function(x, ...)
-	{
-		structure(list(x), class=c('mpolyList','polylist','list'))
-	}
-	c.mpolyList=function(...)
-	{
-		structure(polynom:::c.polylist(...), class=c('mpolyList', 'polylist','list'))
-	}
-
-
-	product=function(...)UseMethod("product")
-	product.default=base::prod
-	product.mpolyList = function(...)
-	{
-		mpl=c(...)
-		if(length(mpl) == 1L) return(mpl[[1L]])
-		Reduce("*", mpl[-1L], mpl[[1L]])
-	}
-
-	summation=function(...)UseMethod("summation")
-	summation.default=base::sum
-	summation.mpolyList = function(...)
-	{
-		mpl=c(...)
-		if(length(mpl) == 1L) return(mpl[[1L]])
-		Reduce("+", mpl[-1L], mpl[[1L]])
-	}
-}
 
 
 rational=function(num.polynomial, denom.polynomial=polynomial(1))
 {
-	structure(list(numerator=num.polynomial, denominator=denom.polynomial), class='rational')
+	structure(list(numerator=num.polynomial, denominator=denom.polynomial), class=c('rational','polylist'))
 }
 `*.rational`=function(e1, e2)
 {
@@ -168,18 +128,13 @@ ratlist=function(num.polylist, denom.polylist=rep(polynomial(1), length(num.poly
 {
 	structure(list(numerator=num.polylist, denominator=denom.polylist), class='ratlist')
 }
-if(FALSE){
-as.ratlist=function(x,...)UseMethod("as.ratlist")
-as.ratlist.polylist=function(x,...) ratlist(x,...)
-as.ratlist.polynomial=function(x,...) as.ratlist(polylist(x),...)
-as.ratlist.numeric=function(x,...) as.ratlist(polynomial(x,...))
-}
+
 
 .commonDenom=function(num.polylist, denom.polylist) ## finds n[1]/d[1] + n[2]/d[2] + ... ### need to optimize for speed
 {  
 	Ln=length(num.polylist); Ld=length(denom.polylist)
-	if(Ln!=Ld){Ld=Ln=max(Ld,Ln); num.polylist=rep(num.polylist, length.out=Ln); denom.polylist=rep(denom.polylist, length.out=Ld); 
-	if(Ln==1) return(rational(num.polylist[[1L], denom.polylist[[1L]]))
+	if(Ln!=Ld){Ld=Ln=max(Ld,Ln); num.polylist=rep(num.polylist, length.out=Ln); denom.polylist=rep(denom.polylist, length.out=Ld); }
+	if(Ln==1) return(rational(num.polylist[[1L]], denom.polylist[[1L]]))
 	denom.ans = LCM(denom.polylist)
 	num.ans = polynomial(0)
 	for(i in seq(Ln)){

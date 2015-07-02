@@ -518,8 +518,8 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	  sum1.rational = sum(sum1.ratlist)
 	  sum23.rational = sum2.rational * sum3.rational
 	  ans.rational = sum1.rational - sum23.rational
-	  degree = degree(ans$numerator); 
-	  polyCoefs = coef(ans$numerator)[order(degree,na.last=FALSE)]
+	  degree = degree(ans.rational$numerator); 
+	  polyCoefs = coef(ans.rational$numerator)[order(degree,na.last=FALSE)]
 
 	  roots = polyroot(polyCoefs)
 	  candidates = Re(roots)[Re(roots)>=0 & abs(Im(roots)) < .Machine$double.eps^.5]

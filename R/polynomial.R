@@ -1,137 +1,224 @@
-constructConstPolyList=function(coefs)
+`*.polylist` = function(e1, e2) ## needed for polynom package
 {
-	ans=do.call(polylist, as.list(coefs)) 
-	class(ans)=c('mpolyList', 'polylist','list')
-	ans
+	if(is.numeric(e2) || is.polynomial(e2)) {
+		e2 = as.polynomial(e2)
+		structure(lapply(e1, "*", e2), class='polylist')
+	}else if(inherits(e2, 'polylist')){
+		l1=length(e1); l2=length(e2)
+		if(l1!=l2){
+			L=max(c(l1,l2))
+			e1=rep(e1, length.out=L); e2=rep(e2, length.out=L)
+		}
+		structure(mapply("*", e1, e2, SIMPLIFY=FALSE), class='polylist')
+	}else stop('unknown e2 class')
 }
-constructLinearPolyList=function(const.coefs=0, linear.coefs=rep(0, length(const.coefs)), linear.name='x')
+`/.polylist` = function(e1, e2) ## not used by varComp, just for completeness
 {
-	stopifnot(length(const.coefs) == length(linear.coefs))
+	if(is.numeric(e2) || is.polynomial(e2)) {
+		e2 = as.polynomial(e2)
+		structure(lapply(e1, "/", e2), class='polylist')
+	}else if(inherits(e2, 'polylist')){
+		l1=length(e1); l2=length(e2)
+		if(l1!=l2){
+			L=max(c(l1,l2))
+			e1=rep(e1, length.out=L); e2=rep(e2, length.out=L)
+		}
+		structure(mapply("/", e1, e2, SIMPLIFY=FALSE), class='polylist')
+	}else stop('unknown e2 class')
+}
+`%%.polylist` = function(e1, e2) ## not used by varComp, just for completeness
+{
+	if(is.numeric(e2) || is.polynomial(e2)) {
+		e2 = as.polynomial(e2)
+		structure(lapply(e1, "%%", e2), class='polylist')
+	}else if(inherits(e2, 'polylist')){
+		l1=length(e1); l2=length(e2)
+		if(l1!=l2){
+			L=max(c(l1,l2))
+			e1=rep(e1, length.out=L); e2=rep(e2, length.out=L)
+		}
+		structure(mapply("%%", e1, e2, SIMPLIFY=FALSE), class='polylist')
+	}else stop('unknown e2 class')
+}
+`+.polylist` = function(e1, e2) ## needed for polynom package
+{
+	if(missing(e2)) return(e1)
+	if(is.numeric(e2) || is.polynomial(e2)) {
+		e2 = as.polynomial(e2)
+		structure(lapply(e1, "+", e2), class='polylist')
+	}else if(inherits(e2, 'polylist')){
+		l1=length(e1); l2=length(e2)
+		if(l1!=l2){
+			L=max(c(l1,l2))
+			e1=rep(e1, length.out=L); e2=rep(e2, length.out=L)
+		}
+		structure(mapply("+", e1, e2, SIMPLIFY=FALSE), class='polylist')
+	}else stop('unknown e2 class')
+}
+`-.polylist` = function(e1, e2) ## not used by varComp, just for completeness
+{
+	if(missing(e2)) return(e1 * (-1))
+	if(is.numeric(e2) || is.polynomial(e2)) {
+		e2 = as.polynomial(e2)
+		structure(lapply(e1, "-", e2), class='polylist')
+	}else if(inherits(e2, 'polylist')){
+		l1=length(e1); l2=length(e2)
+		if(l1!=l2){
+			L=max(c(l1,l2))
+			e1=rep(e1, length.out=L); e2=rep(e2, length.out=L)
+		}
+		structure(mapply("-", e1, e2, SIMPLIFY=FALSE), class='polylist')
+	}else stop('unknown e2 class')
+}
+`^.polylist` = function(e1, e2)
+{
+	stopifnot(mode(e2)=='numeric' && length(e2)==1L && e2==as.integer(e2+.5))
+	structure(lapply(e1, "^", e2), class='polylist')
+}
+
+rep.polynomial=function(x, ...)
+{
+	structure(rep(list(x), ...), class='polylist')
+}
+const.polylist=function(coefs)
+{
+	do.call(polylist, as.list(coefs)) 
+}
+linear.polylist=function(const.coefs=0, linear.coefs=rep(0, length(const.coefs)), linear.name='x')
+{
+	L1=length(const.coefs); L2= length(linear.coefs)
+	if(L1!=L2){L1=L2=max(L1,L2); const.coefs=rep(const.coefs,length.out=L1); linear.coefs=rep(linear.coefs,length.out=L2)}
 	
-	const = constructConstPolyList(const.coefs)
-	idx = which(linear.coefs != 0)
-	if(length(idx)==0L) return(const)
+	const.polylist(const.coefs) + const.polylist(linear.coefs) * rep(polynomial(0:1), L1)
+}
+
+if(FALSE){
+	as.mpolyList = function(x, ...) UseMethod("as.mpolyList")
+	as.mpolyList.numeric=function(x, ...)
+	{
+		do.call('constructLinearPolyList', list(const.coefs=x, ...))
+	}
+	as.mpolyList.list=function(x, ...)
+	{
+		stopifnot(all(sapply(x, is.polynomial)))
+		class(x)=c('mpolyList','polylist','list')
+		x
+	}
+	as.mpolyList.polynomial = function(x, ...)
+	{
+		structure(list(x), class=c('mpolyList','polylist','list'))
+	}
+	c.mpolyList=function(...)
+	{
+		structure(polynom:::c.polylist(...), class=c('mpolyList', 'polylist','list'))
+	}
+
+
+	product=function(...)UseMethod("product")
+	product.default=base::prod
+	product.mpolyList = function(...)
+	{
+		mpl=c(...)
+		if(length(mpl) == 1L) return(mpl[[1L]])
+		Reduce("*", mpl[-1L], mpl[[1L]])
+	}
+
+	summation=function(...)UseMethod("summation")
+	summation.default=base::sum
+	summation.mpolyList = function(...)
+	{
+		mpl=c(...)
+		if(length(mpl) == 1L) return(mpl[[1L]])
+		Reduce("+", mpl[-1L], mpl[[1L]])
+	}
+}
+
+
+rational=function(num.polynomial, denom.polynomial=polynomial(1))
+{
+	structure(list(numerator=num.polynomial, denominator=denom.polynomial), class='rational')
+}
+`*.rational`=function(e1, e2)
+{
+	if(is.numeric(e2) && length(e2)==1L) {
+		e2=rational(polynomial(e2))
+	}else if(is.polynomial(e2)) e2=rational(e2)
+	stopifnot(inherits(e2, 'rational'))
 	
-	oneX = polynomial(0:1)
-	lin = lapply( constructConstPolyList(linear.coefs), "*", oneX)
-	ans = mapply("+", const, lin, SIMPLIFY=FALSE)
-	class(ans)=c('mpolyList', 'polylist','list')
-	ans
+	rational(e1$numerator * e2$numerator, e1$denominator * e2$denominator)
+}
+`+.rational`=function(e1, e2)
+{
+	if(missing(e2)) return(e1)
+	.commonDenom(
+		polylist(e1$numerator, e2$numerator), 
+		polylist(e1$denominator, e2$denominator)
+	)
+}
+`-.rational`=function(e1, e2)
+{
+	if(missing(e2)) return(rational(-e1$numerator, e2$denominator))
+	.commonDenom(
+		polylist(e1$numerator, -e2$numerator), 
+		polylist(e1$denominator, e2$denominator)
+	)
 }
 
-as.mpolyList = function(x, ...) UseMethod("as.mpolyList")
-as.mpolyList.numeric=function(x, ...)
+ratlist=function(num.polylist, denom.polylist=rep(polynomial(1), length(num.polylist)))
 {
-	do.call('constructLinearPolyList', list(const.coefs=x, ...))
+	structure(list(numerator=num.polylist, denominator=denom.polylist), class='ratlist')
 }
-as.mpolyList.list=function(x, ...)
-{
-	stopifnot(all(sapply(x, is.polynomial)))
-	class(x)=c('mpolyList','polylist','list')
-	x
-}
-as.mpolyList.polynomial = function(x, ...)
-{
-	structure(list(x), class=c('mpolyList','polylist','list'))
-}
-c.mpolyList=function(...)
-{
-	structure(polynom:::c.polylist(...), class=c('mpolyList', 'polylist','list'))
+if(FALSE){
+as.ratlist=function(x,...)UseMethod("as.ratlist")
+as.ratlist.polylist=function(x,...) ratlist(x,...)
+as.ratlist.polynomial=function(x,...) as.ratlist(polylist(x),...)
+as.ratlist.numeric=function(x,...) as.ratlist(polynomial(x,...))
 }
 
-'^.mpolyList' = function(e1, e2)
-{
-	stopifnot(is.numeric(e2) && length(e2)==1L)
-	structure(lapply(e1, "^", e2), class=c('mpolyList','polylist','list'))
-}
-	'*.mpolyList' = function(e1, e2) ## needed for polynom package
-	{
-		if(is.numeric(e2) || is.polynomial(e2)) {
-			e2 = as.polynomial(e2)
-			structure(lapply(e1, "*", e2), class=c('mpolyList','polylist','list'))
-		}else if(inherits(e2, 'mpolyList')){
-			l1=length(e1); l2=length(e2)
-			if(l1!=l2){
-				L=max(c(l1,l2))
-				e1=rep(e1, length.out=L); e2=rep(e2, length.out=L)
-			}
-			structure(mapply("*", e1, e2, SIMPLIFY=FALSE), class=c('mpolyList','polylist','list'))
-		}else stop('unknown e2 class')
-	}
-	'+.mpolyList' = function(e1, e2) ## needed for polynom package
-	{
-		if(is.numeric(e2) || is.polynomial(e2)) {
-			e2 = as.polynomial(e2)
-			structure(lapply(e1, "+", e2), class=c('mpolyList','polylist','list'))
-		}else if(inherits(e2, 'mpolyList')){
-			l1=length(e1); l2=length(e2)
-			if(l1!=l2){
-				L=max(c(l1,l2))
-				e1=rep(e1, length.out=L); e2=rep(e2, length.out=L)
-			}
-			structure(mapply("+", e1, e2, SIMPLIFY=FALSE), class=c('mpolyList','polylist','list'))
-		}else stop('unknown e2 class')
-	}
-
-product=function(...)UseMethod("product")
-product.default=base::prod
-product.mpolyList = function(...)
-{
-	mpl=c(...)
-	if(length(mpl) == 1L) return(mpl[[1L]])
-	Reduce("*", mpl[-1L], mpl[[1L]])
-}
-
-summation=function(...)UseMethod("summation")
-summation.default=base::sum
-summation.mpolyList = function(...)
-{
-	mpl=c(...)
-	if(length(mpl) == 1L) return(mpl[[1L]])
-	Reduce("+", mpl[-1L], mpl[[1L]])
-}
-
-
-
-as.qmpolyList=function(x, ...) UseMethod("as.qmpolyList")
-as.qmpolyList.mpolyList=function(x, denom.mpolyList=as.mpolyList(rep(1,length(x))), ...)
-{
-	structure(list(numerator=x, denominator=denom.mpolyList), class='qmpolyList')
-}
-commonDenom=function(numList, denomList, ...) ## need to optimize for speed
+.commonDenom=function(num.polylist, denom.polylist) ## finds n[1]/d[1] + n[2]/d[2] + ... ### need to optimize for speed
 {  
-	n=length(numList)
-	stopifnot(n ==length(denomList))
-	if(n==1) return(as.qmpolyList(numList, denomList))
+	Ln=length(num.polylist); Ld=length(denom.polylist)
+	if(Ln!=Ld){Ld=Ln=max(Ld,Ln); num.polylist=rep(num.polylist, length.out=Ln); denom.polylist=rep(denom.polylist, length.out=Ld); 
+	if(Ln==1) return(rational(num.polylist[[1L], denom.polylist[[1L]]))
+	denom.ans = LCM(denom.polylist)
 	num.ans = polynomial(0)
-	denom.ans = LCM(denomList)
-	for(i in seq(n)){
-		num.ans = num.ans + numList[[i]] * (denom.ans / denomList[[i]])
+	for(i in seq(Ln)){
+		num.ans = num.ans + num.polylist[[i]] * (denom.ans / denom.polylist[[i]])
 	}
-	as.qmpolyList(as.mpolyList(num.ans), as.mpolyList(denom.ans))
+	rational(num.ans, denom.ans)
 }
 
-"+.qmpolyList"=function(e1, e2=as.qmpolyList(as.mpolyList(0)))
+.sum1ratlist=function(x) .commonDenom(x$numerator, x$denominator)
+sum.ratlist = function(..., na.rm = FALSE)
 {
-	commonDenom(as.mpolyList(c(e1$numerator, e2$numerator)), 
-				as.mpolyList(c(e1$denominator, e2$denominator)))
+	all.rat=lapply(list(...), .sum1ratlist)
+	
+	ans0 = all.rat[[1]]
+	if(length(all.rat)==1L) return(ans0)
+	Reduce("+", all.rat[-1L], ans0)	
 }
-"-.qmpolyList"=function(e1, e2=as.qmpolyList(as.mpolyList(0)))
+
+if(FALSE){
+`+.ratlist`=function(e1, e2)  ## not elementwise addition, but sum(e1) + sum(e2)
 {
-	commonDenom(as.mpolyList(c(e1$numerator, e2$numerator * -1 )), 
-				as.mpolyList(c(e1$denominator, e2$denominator)))
+	if(missing(e2)) return(.commonDenom(e1$numerator, e1$denominator))
+	if(inherits(e2, 'polynomial')){
+		e2 = ratlist(polylist(e2))
+	}else if(inherits(e2, 'polylist')){
+		e2 = ratlist(e2)
+	}else if(mode(e2)=='numeric') {
+		e2 = ratlist(do.call('polylist',as.list(e2)))
+	}
+	
+	.commonDenom(c(e1$numerator, e2$numerator), 
+				c(e1$denominator, e2$denominator))
 }
-summation.qmpolyList=function(...)
+`-.ratlist`=function(e1, e2)
 {
-	qmpl = list(...)
-	ans0 = "+.qmpolyList"(qmpl[[1L]])
-	if(length(qmpl)==1L) return(ans0)
-	Reduce("+.qmpolyList", qmpl[-1L], ans0)
+	if(missing(e2)) return(.commonDenom(e1$numerator * (-1), e1$denominator))
+	.commonDenom(c(e1$numerator, e2$numerator * -1 ), 
+				 c(e1$denominator, e2$denominator))
 }
-"*.qmpolyList"=function(e1, e2=as.qmpolyList(as.mpolyList(1)))
-{
-	e1=summation(e1); e2=summation(e2)
-	as.qmpolyList(e1$numerator * e2$numerator, e1$denominator * e2$denominator)
 }
 
 degree=function(x,...)UseMethod('degree')

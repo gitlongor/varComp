@@ -499,29 +499,27 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	  stdZ = drop(crossprod(eigK$vector , y))
 	  nPosEig=sum(eigK$value >= control$eigenvalue.eps)
 	  
-	  sum2.qmpolyList=as.qmpolyList(
-		as.mpolyList(head(eigK$values, nPosEig)),
-		as.mpolyList(rep(1, nPosEig), linear.coefs=head(eigK$values,nPosEig), linear.name='tau')
+	  sum2.ratlist=ratlist(
+		const.polylist(head(eigK$values, nPosEig)),
+		linear.polylist(rep(1, nPosEig), linear.coefs=head(eigK$values,nPosEig), linear.name='tau')
 	  )
-	  sum1.qmpolyList = as.qmpolyList(
-		as.mpolyList(head(eigK$values * stdZ^2, nPosEig) * n), 
-		sum2.qmpolyList$denominator ^ 2 
+	  sum1.ratlist = ratlist(
+		const.polylist(head(eigK$values * stdZ^2, nPosEig) * n), 
+		sum2.ratlist$denominator ^ 2 
 	  )
-	  sum31.qmpolyList = as.qmpolyList(
-		as.mpolyList( head(stdZ, nPosEig)^2),
-		sum2.qmpolyList$denominator
+	  sum31.ratlist = ratlist(
+		const.polylist( head(stdZ, nPosEig)^2),
+		sum2.ratlist$denominator
 	  )
-	  sum32.qmpolyList = as.qmpolyList(
-		as.mpolyList( if(n>nPosEig) tail(stdZ, n-nPosEig)^2 else 0 )
-	  )
+	  sum32.rational = rational(polynomial(sum(tail(stdZ, n-nPosEig)^2)))
 
-	  sum3 = sum31.qmpolyList + sum32.qmpolyList
-	  sum2 = summation(sum2.qmpolyList)
-	  sum1 = summation(sum1.qmpolyList)
-	  sum23 = sum2 * sum3
-	  ans = sum1 - sum23
-	  degree = degree(ans$numerator[[1L]]); 
-	  polyCoefs = coef(ans$numerator[[1L]])[order(degree,na.last=FALSE)]
+	  sum3.rational = sum(sum31.ratlist) + sum32.rational
+	  sum2.rational = sum(sum2.ratlist)
+	  sum1.rational = sum(sum1.ratlist)
+	  sum23.rational = sum2.rational * sum3.rational
+	  ans.rational = sum1.rational - sum23.rational
+	  degree = degree(ans$numerator); 
+	  polyCoefs = coef(ans$numerator)[order(degree,na.last=FALSE)]
 
 	  roots = polyroot(polyCoefs)
 	  candidates = Re(roots)[Re(roots)>=0 & abs(Im(roots)) < .Machine$double.eps^.5]

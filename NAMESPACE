@@ -6,7 +6,8 @@ importFrom(MASS, ginv)
 importFrom(CompQuadForm, davies)
 importFrom(RLRsim, RLRTSim)
 importFrom(mvtnorm, pmvnorm)
-
+importFrom(utils, combn)
+importFrom(graphics, plot, abline)
 
 S3method(coef, varComp)
 S3method(model.matrix, varComp)

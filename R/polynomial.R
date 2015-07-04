@@ -92,7 +92,7 @@ linear.polylist=function(const.coefs=0, linear.coefs=rep(0, length(const.coefs))
 	const.polylist(const.coefs) + const.polylist(linear.coefs) * rep(polynomial(0:1), L1)
 }
 
-rational=function(numer, denom=1)rationalfun::rationalfun(numer, denom)
+rational=function(numer, denom=polynomial(1))rationalfun::rationalfun(numer, denom)
 if(FALSE){
 rational=function(num.polynomial, denom.polynomial=polynomial(1))
 {

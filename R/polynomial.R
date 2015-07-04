@@ -92,8 +92,8 @@ linear.polylist=function(const.coefs=0, linear.coefs=rep(0, length(const.coefs))
 	const.polylist(const.coefs) + const.polylist(linear.coefs) * rep(polynomial(0:1), L1)
 }
 
-
-
+rational=function(numer, denom=1)rationalfun::rationalfun(numer, denom)
+if(FALSE){
 rational=function(num.polynomial, denom.polynomial=polynomial(1))
 {
 	structure(list(numerator=num.polynomial, denominator=denom.polynomial), class=c('rational','polylist'))
@@ -123,13 +123,19 @@ rational=function(num.polynomial, denom.polynomial=polynomial(1))
 		polylist(e1$denominator, e2$denominator)
 	)
 }
-
-ratlist=function(num.polylist, denom.polylist=rep(polynomial(1), length(num.polylist)))
-{
-	structure(list(numerator=num.polylist, denominator=denom.polylist), class='ratlist')
 }
 
+ratlist=function(numer.polylist, denom.polylist=rep(polynomial(1), length.out=length(numer.polylist)))
+{
+	structure(mapply(rational, numer.polylist, denom.polylist, SIMPLIFY=FALSE), class='ratlist')
+}
+getDenominator=function(x)UseMethod('getDenominator')
+getDenominator.ratlist=function(x)
+{
+	do.call('polylist', lapply(x, '[[', 'denominator'))
+}
 
+if(FALSE){
 .commonDenom=function(num.polylist, denom.polylist) ## finds n[1]/d[1] + n[2]/d[2] + ... ### need to optimize for speed
 {  
 	Ln=length(num.polylist); Ld=length(denom.polylist)
@@ -142,8 +148,13 @@ ratlist=function(num.polylist, denom.polylist=rep(polynomial(1), length(num.poly
 	}
 	rational(num.ans, denom.ans)
 }
+}
 
-.sum1ratlist=function(x) .commonDenom(x$numerator, x$denominator)
+.sum1ratlist=function(x) {
+	ans0 = x[[1L]]
+	if(length(x)==1L) return(ans0)
+	Reduce("+", x[-1L], ans0)
+}	
 sum.ratlist = function(..., na.rm = FALSE)
 {
 	all.rat=lapply(list(...), .sum1ratlist)

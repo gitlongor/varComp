@@ -505,11 +505,11 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	  )
 	  sum1.ratlist = ratlist(
 		const.polylist(head(eigK$values * stdZ^2, nPosEig) * n), 
-		sum2.ratlist$denominator ^ 2 
+		getDenominator(sum2.ratlist) ^ 2 
 	  )
 	  sum31.ratlist = ratlist(
 		const.polylist( head(stdZ, nPosEig)^2),
-		sum2.ratlist$denominator
+		getDenominator(sum2.ratlist)
 	  )
 	  sum32.rational = rational(polynomial(sum(tail(stdZ, n-nPosEig)^2)))
 

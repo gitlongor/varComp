@@ -1,5 +1,6 @@
 import(stats)
 import(polynom)
+import(rationalfun)
 importFrom(quadprog, solve.QP)
 importFrom(nlme, fixef, fixed.effects)
 importFrom(Matrix, nearPD)

@@ -25,11 +25,22 @@ nlminb.control=function(
 	, class = 'nlminb.control')
 }
 
-varComp.control=function(optMethod=c('nlminb','polyroot'), verbose = FALSE, start=NULL, REML = TRUE, 
-information=informationTypes, boundary.eps=5e-4, eigenvalue.eps = sqrt(.Machine$double.eps), imaginary.eps = sqrt(.Machine$double.eps), 
-  nlminb=nlminb.control(iter.max=200L, eval.max=500L), 
+polyoptim.control=function(solver='polyroot', eigenvalue.eps = sqrt(.Machine$double.eps), imaginary.eps = sqrt(.Machine$double.eps), multi.precision=TRUE, bits=120L ,...)
+{
+	solver = match.arg(solver, c('polyroot', 'eigen'))
+	structure(list(	solver=solver, 
+					eigenvalue.eps = eigenvalue.eps, 
+					imaginary.eps = imaginary.eps, 
+					multi.precision=isTRUE(multi.precision), 
+					bits=as.integer(max(2L,bits)),
+					...),
+			 class = 'polyoptim.control')
+}
+
+varComp.control=function(optMethod=c('nlminb','polyoptim'), verbose = FALSE, start=NULL, REML = TRUE, 
+information=informationTypes, boundary.eps=5e-4, nlminb=nlminb.control(iter.max=200L, eval.max=500L), polyoptim = polyoptim.control(),
   plot.it=FALSE, keepXYK=TRUE)
-{	optMethods=c('nlminb', 'optim', 'NRGD', 'polyroot')
+{	optMethods=c('nlminb', 'optim', 'NRGD', 'polyoptim')
 	optMethod=match.arg(optMethod[1], optMethods)
 	structure(
 	  list(optMethod=optMethod,
@@ -38,9 +49,8 @@ information=informationTypes, boundary.eps=5e-4, eigenvalue.eps = sqrt(.Machine$
 		 REML = REML, 
 		 information = match.arg(information, informationTypes), 
 		 boundary.eps= boundary.eps, 
-		 eigenvalue.eps= eigenvalue.eps, 
-		 imaginary.eps= imaginary.eps, 
 		 nlminb = nlminb, 
+		 polyoptim = polyoptim, 
 		 plot.it=plot.it, 
 		 keepXYK=keepXYK) #nStepHalving
 	  , class = 'varComp.control'
@@ -304,6 +314,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 		 information = control$information 
 		 boundary.eps= control$boundary.eps 
 		 nlminb.control = control$nlminb 
+		 polyoptim.control = control$polyoptim
 		 plot.it= control$plot.it 
 		 keepXYK= control$keepXYK
 		 
@@ -417,13 +428,13 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	WAI=expression({updateNums2();   })
   )
   
-  last.tau=tau=if(is.null(starts) && optMethod!='polyroot') {
+  last.tau=tau=if(is.null(starts) && optMethod!='polyoptim') {
 	minque(y, k, rep(0,nK), lower.bound=.Machine$double.eps^.5, restricted=TRUE)
   }else rep(if(is.null(starts)) 0 else starts, length=nK)
   ltau=log(max(.Machine$double.eps, tau))
   
-  if(nK != 1 && optMethod == 'polyroot'){
-	message("'polyroot' method currently does not support > 1 random effects beyond the residual error; switched to 'nlminb' for optimization")
+  if(nK != 1 && optMethod == 'polyoptim'){
+	message("'polyoptim' method currently does not support > 1 random effects beyond the residual error; switched to 'nlminb' for optimization")
 	optMethod = 'nlminb'
   }
   
@@ -495,13 +506,17 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 		break
 	  }
 	}    
-  }else if(optMethod == 'polyroot'){
+  }else if(optMethod == 'polyoptim'){
 	  stdZ = drop(crossprod(eigK$vector , y))
-	  nPosEig=sum(eigK$value >= control$eigenvalue.eps)
+	  nPosEig=sum(eigK$value >= polyoptim.control$eigenvalue.eps)
+	  if(polyoptim.control$multi.precision){
+		stdZ = as.bigq(stdZ)
+		eigK$values = as.bigq(eigK$values)
+	  }
 	  
 	  sum2.ratlist=ratlist(
 		const.polylist(head(eigK$values, nPosEig)),
-		linear.polylist(rep(1, nPosEig), linear.coefs=head(eigK$values,nPosEig), linear.name='tau')
+		linear.polylist(rep(as.bigq(1), nPosEig), linear.coefs=head(eigK$values,nPosEig), linear.name='tau')
 	  )
 	  sum1.ratlist = ratlist(
 		const.polylist(head(eigK$values * stdZ^2, nPosEig) * n), 
@@ -608,7 +623,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
   names(tau)=nm
   vc = drop(tau*sigma2)
   names(vc)=nm
-  if(optMethod=='polyroot') attr(vc,'all.candidates')=drop(candidates*sigma2)
+  if(optMethod=='polyoptim') attr(vc,'all.candidates')=drop(candidates*sigma2)
   ans=list(
 	## varComp.fit specific block
 	parms=tau, 

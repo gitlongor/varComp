@@ -1,5 +1,5 @@
 import(stats)
-import(polynom)
+import(polynomBigQ)
 import(rationalfun)
 importFrom(quadprog, solve.QP)
 importFrom(nlme, fixef, fixed.effects)

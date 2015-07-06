@@ -2,15 +2,17 @@
 {
 	if(is.numeric(e2) || is.polynomial(e2)) {
 		e2 = as.polynomial(e2)
-		structure(lapply(e1, "*", e2), class='polylist')
+		ans = structure(lapply(e1, "*", e2), class='polylist')
 	}else if(inherits(e2, 'polylist')){
 		l1=length(e1); l2=length(e2)
 		if(l1!=l2){
 			L=max(c(l1,l2))
 			e1=rep(e1, length.out=L); e2=rep(e2, length.out=L)
 		}
-		structure(mapply("*", e1, e2, SIMPLIFY=FALSE), class='polylist')
+		ans = structure(mapply("*", e1, e2, SIMPLIFY=FALSE), class='polylist')
 	}else stop('unknown e2 class')
+    for(i in seq_along(ans)) class(ans[[i]])=c('bigq','polynomial')
+    ans
 }
 `/.polylist` = function(e1, e2) ## not used by varComp, just for completeness
 {
@@ -45,15 +47,17 @@
 	if(missing(e2)) return(e1)
 	if(is.numeric(e2) || is.polynomial(e2)) {
 		e2 = as.polynomial(e2)
-		structure(lapply(e1, "+", e2), class='polylist')
+		ans = structure(lapply(e1, "+", e2), class='polylist')
 	}else if(inherits(e2, 'polylist')){
 		l1=length(e1); l2=length(e2)
 		if(l1!=l2){
 			L=max(c(l1,l2))
 			e1=rep(e1, length.out=L); e2=rep(e2, length.out=L)
 		}
-		structure(mapply("+", e1, e2, SIMPLIFY=FALSE), class='polylist')
+		ans = structure(mapply("+", e1, e2, SIMPLIFY=FALSE), class='polylist')
 	}else stop('unknown e2 class')
+	for(i in seq_along(ans)) class(ans[[i]])=c('bigq','polynomial')
+	ans
 }
 `-.polylist` = function(e1, e2) ## not used by varComp, just for completeness
 {
@@ -82,14 +86,14 @@ rep.polynomial=function(x, ...)
 }
 const.polylist=function(coefs)
 {
-	do.call(polylist, as.list(coefs)) 
+	do.call(polylist, lapply(coefs, polynomial)) 
 }
 linear.polylist=function(const.coefs=0, linear.coefs=rep(0, length(const.coefs)), linear.name='x')
 {
 	L1=length(const.coefs); L2= length(linear.coefs)
 	if(L1!=L2){L1=L2=max(L1,L2); const.coefs=rep(const.coefs,length.out=L1); linear.coefs=rep(linear.coefs,length.out=L2)}
 	
-	const.polylist(const.coefs) + const.polylist(linear.coefs) * rep(polynomial(0:1), L1)
+	const.polylist(const.coefs) + const.polylist(linear.coefs) * rep.polynomial(polynomial(0:1), L1)
 }
 
 rational=function(numer, denom=polynomial(1))rationalfun::rationalfun(numer, denom)
@@ -125,7 +129,7 @@ rational=function(num.polynomial, denom.polynomial=polynomial(1))
 }
 }
 
-ratlist=function(numer.polylist, denom.polylist=rep(polynomial(1), length.out=length(numer.polylist)))
+ratlist=function(numer.polylist, denom.polylist=rep.polynomial(polynomial(1), length.out=length(numer.polylist)))
 {
 	structure(mapply(rational, numer.polylist, denom.polylist, SIMPLIFY=FALSE), class='ratlist')
 }

@@ -53,6 +53,7 @@ export(
 	Minkowski,
 	minque,
 	nlminb.control,
+	polyoptim.control,
 	normalizeTrace,
 	pchibarsq,
 	plus,

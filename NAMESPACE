@@ -1,6 +1,6 @@
 import(stats)
-import(polyRatGmp)
-import(gmp)
+#import(bigPolyRat)
+#import(gmp)
 
 importFrom(quadprog, solve.QP)
 importFrom(nlme, fixef, fixed.effects)

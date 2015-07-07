@@ -27,7 +27,7 @@ nlminb.control=function(
 
 polyoptim.control=function(solver='polyroot', eigenvalue.eps = sqrt(.Machine$double.eps), imaginary.eps = sqrt(.Machine$double.eps), multi.precision=TRUE, bits=120L ,...)
 {
-	solver = match.arg(solver, c('polyroot', 'eigen'))
+	solver = match.arg(solver, c('polyroot', 'eigen', 'bracket'))
 	structure(list(	solver=solver, 
 					eigenvalue.eps = eigenvalue.eps, 
 					imaginary.eps = imaginary.eps, 
@@ -508,35 +508,36 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	}    
   }else if(optMethod == 'polyoptim'){
 	  stdZ = drop(crossprod(eigK$vector , y))
-	  nPosEig=sum(eigK$value >= polyoptim.control$eigenvalue.eps)
+	  nPosEig=sum(eigK$values >= polyoptim.control$eigenvalue.eps)
 	  if(polyoptim.control$multi.precision){
 		stdZ = as.bigq(stdZ)
-		eigK$values = as.bigq(eigK$values)
+		eigK$values.bigq = as.bigq(eigK$values)
 	  }
 	  
 	  sum2.ratlist=ratlist(
-		const.polylist(head(eigK$values, nPosEig)),
-		linear.polylist(rep(as.bigq(1), nPosEig), linear.coefs=head(eigK$values,nPosEig), linear.name='tau')
+		const.polyqlist(head(eigK$values.bigq, nPosEig)),
+		linear.polyqlist(rep(as.bigq(1), nPosEig), linear.coefs=head(eigK$values.bigq,nPosEig), linear.name='tau')
 	  )
 	  sum1.ratlist = ratlist(
-		const.polylist(head(eigK$values * stdZ^2, nPosEig) * n), 
-		getDenominator(sum2.ratlist) ^ 2 
+		const.polyqlist(head(eigK$values.bigq * stdZ^2, nPosEig) * n), 
+		denominator(sum2.ratlist) ^ 2 
 	  )
 	  sum31.ratlist = ratlist(
-		const.polylist( head(stdZ, nPosEig)^2),
-		getDenominator(sum2.ratlist)
+		const.polyqlist( head(stdZ, nPosEig)^2),
+		denominator(sum2.ratlist)
 	  )
-	  sum32.rational = rational(polynomial(sum(tail(stdZ, n-nPosEig)^2)))
+	  sum32.rational = rational(polynomialq(sum(tail(stdZ, n-nPosEig)^2)))
 
 	  sum3.rational = sum(sum31.ratlist) + sum32.rational
 	  sum2.rational = sum(sum2.ratlist)
 	  sum1.rational = sum(sum1.ratlist)
 	  sum23.rational = sum2.rational * sum3.rational
 	  ans.rational = sum1.rational - sum23.rational
-	  degree = degree(ans.rational$numerator); 
-	  polyCoefs = coef(ans.rational$numerator)[order(degree,na.last=FALSE)]
+	  #degree = degree(ans.rational$numerator, all=TRUE); 
+	  #polyCoefs = coef(ans.rational$numerator)[order(degree,na.last=FALSE)]
 
-	  roots = polyroot(polyCoefs)
+	  #roots = polyroot(polyCoefs)
+	  roots = solve(ans.rational$numerator, method=polyoptim.control$solver)
 	  candidates = Re(roots)[Re(roots)>=0 & abs(Im(roots)) < .Machine$double.eps^.5]
 	  n.nr=0L
 	  

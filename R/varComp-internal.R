@@ -27,7 +27,7 @@ diag.1.n + Reduce('+', mapply('*', tau, k, SIMPLIFY=FALSE))
 updateLI=evalq(function(tau){
 	if(isTRUE( attr(LI, 'tau')==tau )) return(LI)
 	if(nK==1L){ 
-		tmp= crossprod(eigK$tvec, 1/sqrt(eigK$val*tau+1) * eigK$tvec)
+		tmp= crossprod(eigK$tvec, 1/sqrt(eigK$values*tau+1) * eigK$tvec)
 	}else
 		tmp = t(backsolve(chol(V(tau)), diag.1.n))
 	attr(tmp,'tau')=tau
@@ -55,7 +55,7 @@ PREML=evalq(function(){ # LIy, LI, n
 	drop(
 		if(nK==1L){
 			.5*(
-				-n*log(crossprod(LIy)) - sum(log(eigK$val*attr(LI,'tau')+1)) -n -n*log(2*pi)-n*log(n)
+				-n*log(crossprod(LIy)) - sum(log(eigK$values*attr(LI,'tau')+1)) -n -n*log(2*pi)-n*log(n)
 			)
 		}else
 			.5*(

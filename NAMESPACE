@@ -1,6 +1,7 @@
 import(stats)
-import(polynomBigQ)
-import(rationalfun)
+import(polyRatGmp)
+import(gmp)
+
 importFrom(quadprog, solve.QP)
 importFrom(nlme, fixef, fixed.effects)
 importFrom(Matrix, nearPD)

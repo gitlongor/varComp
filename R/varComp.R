@@ -625,6 +625,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
   nm=names(K)
   if(is.null(nm)) nm = if(nK>0L) paste('varComp', seq_along(K), sep='.') else character(0L)
   names(tau)=nm
+  if(optMethod=='polyoptim') attr(tau, 'decartes')=nSign.changes
   vc = drop(tau*sigma2)
   names(vc)=nm
   if(optMethod=='polyoptim') attr(vc,'all.candidates')=drop(candidates*sigma2)

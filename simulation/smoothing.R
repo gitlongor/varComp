@@ -25,7 +25,7 @@ op=par(mfrow=c(2,2)); plot(x,y1);plot(x,y3);plot(x,y3);plot(x,y4);par(op)
 B.cs=bsplineS(x, breaks=x, norder=4, nderiv=0, returnMatrix=FALSE)
 Omega.cs=bsplinepen(create.bspline.basis(rangeval = range(x), breaks=x, norder=4), Lfdobj = 2)
 eig.O.cs=eigen(Omega.cs, symmetric = TRUE)
-X.cs = B.cs%*%eig.O.cs$vectors[,-seq(n)]
+#X.cs = B.cs%*%eig.O.cs$vectors[,-seq(n)]
 Z.cs = B.cs%*%eig.O.cs$vectors[,seq(n)]/sqrt(eig.O.cs$values[seq(n)])
 K.cs=tcrossprod(Z.cs)
 

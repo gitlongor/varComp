@@ -614,7 +614,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	sigma2=crossprod(LIy)/n
 	
   if(isTRUE(plot.it)){
-	taus=exp(seq(log(min(tau/2, 1e-9)), log(max(2*tau, 1e-6)), length=500))
+	taus=exp(seq(log(1e-9), log(max(2*tau, 1e-6)), length=500))
 	taus=sort(unique(c(taus, seq(0, 2*tau, length=500))))
 	objs=sapply(taus, obj)
 	# x11()
@@ -625,6 +625,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
   nm=names(K)
   if(is.null(nm)) nm = if(nK>0L) paste('varComp', seq_along(K), sep='.') else character(0L)
   names(tau)=nm
+  if(optMethod=='polyoptim') attr(tau, 'decartes')=nSign.changes
   vc = drop(tau*sigma2)
   names(vc)=nm
   if(optMethod=='polyoptim') attr(vc,'all.candidates')=drop(candidates*sigma2)

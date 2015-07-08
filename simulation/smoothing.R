@@ -58,6 +58,7 @@ coef(fit2.co.po,'var.ratio')
 (fit3.co=varComp(y3~0+X.co, varcov=list(K.co), control=list(start=1e4, plot.it=TRUE)))
 (fit3.cs.po=varComp(y3~0+X.cs, varcov=list(K.cs), control=list('po',start=1e4, plot.it=TRUE)))
 (fit3.co.po=varComp(y3~0+X.co, varcov=list(K.co), control=list('po',start=1e4, plot.it=TRUE)))
+coef(fit3.cs.po,'var.ratio')
 coef(fit3.co.po,'var.ratio')
 
 (fit4.cs=varComp(y4~0+X.cs, varcov=list(K.cs), control=list(start=1e-3, plot.it=TRUE)))

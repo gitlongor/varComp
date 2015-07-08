@@ -305,6 +305,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
   #if(!is.matrix(X)) X=as.matrix(X)  ## does it matter?
   #if(diff(range(X))>0) X=model.matrix(~X)  ##  dealing with constant X including zero X
   #Y=as.numeric(as.vector(Y)) ## plan to move to varComp formula interface for efficiency
+	control = do.call('varComp.control', control)
 	{
 		 optMethod=control$optMethod
 		 verbose= control$verbose 
@@ -313,8 +314,8 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 			if(!isTRUE(REML)) stop("Currently only REML method is implemented")
 		 information = control$information 
 		 boundary.eps= control$boundary.eps 
-		 nlminb.control = control$nlminb 
-		 polyoptim.control = control$polyoptim
+		 nlminb.control = do.call('nlminb.control', control$nlminb )
+		 polyoptim.control = do.call('polyoptim.control', control$polyoptim)
 		 plot.it= control$plot.it 
 		 keepXYK= control$keepXYK
 		 
@@ -613,7 +614,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	sigma2=crossprod(LIy)/n
 	
   if(isTRUE(plot.it)){
-	taus=exp(seq(log(1e-9), log(max(2*tau, 1e-6)), length=500))
+	taus=exp(seq(log(min(tau/2, 1e-9)), log(max(2*tau, 1e-6)), length=500))
 	taus=sort(unique(c(taus, seq(0, 2*tau, length=500))))
 	objs=sapply(taus, obj)
 	# x11()

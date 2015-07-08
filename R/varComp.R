@@ -561,7 +561,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
   }else stop('Method not implemented')
   
 
-  bd.idx=which(tau<boundary.eps)
+  bd.idx=which(tau!=0 && tau<boundary.eps)
   if(FALSE){
 	  if(length(bd.idx)>0L){#browser()
 		preprocPREML(tau)
@@ -584,7 +584,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	  }
   }
 
-  if((nearZero = length(bd.idx))>0L){  # check boundary
+  if((nearZero = length(bd.idx))>0L && optMethod!='polyoptim'){  # check boundary
 	bd.idx.all= if(nearZero == 1) list(matrix(bd.idx)) else lapply(seq_len(nearZero), combn, x=bd.idx)
 	cur.obj=obj(tau)
 	tau.bak = tau
@@ -613,7 +613,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	sigma2=crossprod(LIy)/n
 	
   if(isTRUE(plot.it)){
-	taus=exp(seq(log(1e-9), log(2*tau), length=500))
+	taus=exp(seq(log(1e-9), log(max(2*tau, 1e-6)), length=500))
 	taus=sort(unique(c(taus, seq(0, 2*tau, length=500))))
 	objs=sapply(taus, obj)
 	# x11()

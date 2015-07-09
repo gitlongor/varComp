@@ -4,10 +4,10 @@ library(splines); library(fda); library(nlme)
 x0=-10:110 
 x=0:100
 n=length(x)
-knots = c(-1, seq(0,100,length=25), 101)
+knots = seq(0,100,length=25)
 nknots=length(knots)-2
 X=cbind(1,x)
-brks = c(-1, x, 101)
+brks = x
 
 p=poly(x0, degree=18)[x0%in%x,]
     p = p*8 ## magic that makes the plots similar to those in the paper

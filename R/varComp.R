@@ -538,11 +538,18 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	  #polyCoefs = coef(ans.rational$numerator)[order(degree,na.last=FALSE)]
 
 	  #roots = polyroot(polyCoefs)
-	  roots = solve(numerator(ans.rational), method=polyoptim.control$solver)
-	  
 	  nSign.changes=decartes(numerator(ans.rational))
-	  candidates = Re(roots)[Re(roots)>=0 & abs(Im(roots)) < .Machine$double.eps^.5]
-	  n.nr=0L
+	  if(nSign.changes==0L){
+		candidates=numeric(0L)
+	  }else {
+		roots = solve(numerator(ans.rational), method=polyoptim.control$solver)
+		if(nSign.changes==1L){
+			candidates = Re(roots)[which.min(abs(Im(roots)))]
+		}else{
+			candidates = Re(roots)[Re(roots)>=0 & abs(Im(roots)) < .Machine$double.eps^.5]
+		}
+	 }
+	 n.nr=0L
 	  
 		if(length(candidates) > 0){
 			cur.obj = -Inf; ans.idx=NA_integer_

@@ -45,7 +45,7 @@ information=informationTypes, boundary.eps=5e-4, nlminb=nlminb.control(iter.max=
 	structure(
 	  list(optMethod=optMethod,
 		 verbose=verbose, 
-		 starts=start, 
+		 start=start, 
 		 REML = REML, 
 		 information = match.arg(information, informationTypes), 
 		 boundary.eps= boundary.eps, 
@@ -297,7 +297,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	#                      viii.	conv: A small numeric, the convergence criterion, only used when optMethod='NRGD'.
 	#                      ix.	nStepHalving: A positive integer, giving the max number of step halving during NRGD. 
 	#                      x.	nIter: A positive integer, giving the max number of iterations allowed for NRGD.
-	#                      xi.	starts: A vector of nonnegative doubles of the same length as the number of variance components. This is the starting value for tau, i.e., the ratio of each variance components to the error variance. 
+	#                      xi.	start: A vector of nonnegative doubles of the same length as the number of variance components. This is the starting value for tau, i.e., the ratio of each variance components to the error variance. 
 	#                      xii.	plot.it: A logical scalar, indicating if PREML surface will be plotted (for one variance components only). Please send Long Qu an Email with your data set if you find multiple local maxima, for possible improvements of this function. 
 	#                      xiii.	verbose: A logical scalar, indicating if extra information is printed. 
 	#                             keepXYK: Logical, indication if original X, Y and K matrices are stored in the results. 
@@ -309,7 +309,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	{
 		 optMethod=control$optMethod
 		 verbose= control$verbose 
-		 starts= control$starts 
+		 start= control$start 
 		 REML = control$REML 
 			if(!isTRUE(REML)) stop("Currently only REML method is implemented")
 		 information = control$information 
@@ -429,9 +429,9 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	WAI=expression({updateNums2();   })
   )
   
-  last.tau=tau=if(is.null(starts) && optMethod!='polyoptim') {
+  last.tau=tau=if(is.null(start) && optMethod!='polyoptim') {
 	minque(y, k, rep(0,nK), lower.bound=.Machine$double.eps^.5, restricted=TRUE)
-  }else rep(if(is.null(starts)) 0 else starts, length=nK)
+  }else rep(if(is.null(start)) 0 else start, length=nK)
   ltau=log(max(.Machine$double.eps, tau))
   
   if(nK != 1 && optMethod == 'polyoptim'){
@@ -587,7 +587,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 		}else if(length(bd.idx)>0L) {
 		  bd.idx0= bd.idx [ all.score[bd.idx]==0 ]
 		  if(length(bd.idx0) != length(bd.idx)){
-			new.fit=Recall(y, rep(0,length(y)), , k[-bd.idx], information, method, boundary.eps, conv, nStepHalving, control$nlminb$iter.max, starts=tau[-bd.idx], plot.it, verbose)
+			new.fit=Recall(y, rep(0,length(y)), , k[-bd.idx], information, method, boundary.eps, conv, nStepHalving, control$nlminb$iter.max, start=tau[-bd.idx], plot.it, verbose)
 			if(new.fit$PREML >= PREML()){
 			  tau[-bd.idx]=new.fit$parms
 			  tau[bd.idx]=0

@@ -544,7 +544,12 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	  }else {
 		roots = solve(numerator(ans.rational), method=polyoptim.control$solver)
 		if(nSign.changes==1L){
-			candidates = Re(roots)[which.min(abs(Im(roots)))]
+			tmp=which(Re(roots)>=0)
+			if(length(tmp)==0){
+				warning('#(sign changes)=1 but no positive roots found')
+				candiates=0
+			}else
+				candidates = Re(roots[tmp])[which.min(abs(Im(roots[tmp])))]
 		}else{
 			candidates = Re(roots)[Re(roots)>=0 & abs(Im(roots)) < .Machine$double.eps^.5]
 		}

@@ -5,8 +5,8 @@ Version: 0.2-0
 Date: 2015-07-08
 Authors@R: person("Long", "Qu", role=c("aut", "cre"), email="long.qu@wright.edu")
 Description: Variance component models: global REML estimation, iterative REML estimation, testing fixed effect contrasts through Satterthwaite or Kenward-Roger methods, testing the nullity of variance components through (linear or quadratic) score tests or likelihood ratio tests.
-Depends: R (>= 3.0.0), bigPolyRat, gmp
-Imports: quadprog, Matrix, MASS, CompQuadForm, RLRsim, SPA3G, mvtnorm, nlme, stats 
+Depends: R (>= 3.0.0), bigPolyRat
+Imports: quadprog, Matrix, MASS, CompQuadForm, RLRsim, SPA3G, mvtnorm, nlme, stats, gmp
 LazyData: no
 ByteCompile: yes
 License: GPL-3

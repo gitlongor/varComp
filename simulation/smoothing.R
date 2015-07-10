@@ -54,6 +54,8 @@ if(FALSE){
 #(fit1.cs.po=varComp(y1~x, varcov=list(K.cs), control=varComp.control('po', plot.it=TRUE))) #decartes=2
 (fit1.co.po=varComp(y1~x, varcov=list(K.co), control=list('po', plot.it=TRUE)))
 coef(fit1.co.po,'var.ratio')
+fit1.co.preml=Vectorize(logLik(fit1.co.po,FUN=T))
+op=par(mfrow=c(1,2)); curve(fit1.co.preml(x), 0, .1);curve(fit1.co.preml(x), .1, 2*coef(fit1.co.po,'tau')); par(op)
 
 (fit2.cs=varComp(y2~x, varcov=list(K.cs), control=list(start=1e-3, plot.it=TRUE)))
 (fit2.cs=varComp(y2~x, varcov=list(K.cs), control=list(start=1e4, plot.it=TRUE)))
@@ -62,6 +64,8 @@ coef(fit1.co.po,'var.ratio')
 #(fit2.cs.po=varComp(y2~x, varcov=list(K.cs), control=varComp.control('po', plot.it=TRUE))) #decartes=2
 (fit2.co.po=varComp(y2~x, varcov=list(K.co), control=list('po', plot.it=TRUE)))
 coef(fit2.co.po,'var.ratio')
+fit2.co.preml=Vectorize(logLik(fit2.co.po,FUN=T))
+op=par(mfrow=c(1,2)); curve(fit2.co.preml(x), 0, 5);curve(fit2.co.preml(x), 5, 2*coef(fit2.co.po,'tau')); par(op)
 
 (fit3.cs=varComp(y3~x, varcov=list(K.cs), control=list(start=1e-3, plot.it=TRUE)))
 (fit3.cs=varComp(y3~x, varcov=list(K.cs), control=list(start=1e4, plot.it=TRUE)))
@@ -71,6 +75,8 @@ coef(fit2.co.po,'var.ratio')
 (fit3.co.po=varComp(y3~x, varcov=list(K.co), control=list('po',start=1e4, plot.it=TRUE)))
 #coef(fit3.cs.po,'var.ratio')
 coef(fit3.co.po,'var.ratio')
+fit3.co.preml=Vectorize(logLik(fit3.co.po,FUN=T))
+op=par(mfrow=c(1,2)); curve(fit3.co.preml(x), 0, 10);curve(fit3.co.preml(x), 10, 2*coef(fit3.co.po,'tau')); par(op)
 
 (fit4.cs=varComp(y4~x, varcov=list(K.cs), control=list(start=1e-3, plot.it=TRUE)))
 (fit4.cs=varComp(y4~x, varcov=list(K.cs), control=list(start=1e4, plot.it=TRUE)))

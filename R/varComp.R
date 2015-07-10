@@ -637,7 +637,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	taus=sort(unique(c(taus, seq(0, 2*tau, length=500))))
 	objs=sapply(taus, obj)
 	# x11()
-	plot(taus, objs, xlab='tau', ylab='objective', type='o',main='Profiled residual log likelihood', type='l', lwd=2)
+	plot(taus, objs, xlab='tau', ylab='objective', main='Profiled residual log likelihood', type='l', lwd=2)
 	abline(v=tau)
   }
   

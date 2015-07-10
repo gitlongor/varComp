@@ -1,6 +1,7 @@
 \name{varComp.control}
 \alias{varComp.control}
 \alias{nlminb.control}
+\alias{polyoptim.control}
 \alias{informationTypes}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -11,16 +12,17 @@ Functions controlling the model fitting of varComp
 \code{varComp.control} provides detailed control of model fitting for \code{\link{varComp}}. \code{nlminb.control} provides detailed control of the optimization procedure. \code{informationTypes} is a character vector containing the types of information matrices.
 }
 \usage{
-varComp.control(optMethod=c('nlminb','polyoptim'), 
-               verbose = FALSE, start = NULL, REML = TRUE, 
-               information = informationTypes, boundary.eps = 5e-04, 
-			   eigenvalue.eps = sqrt(.Machine$double.eps), 
-			   imaginary.eps = sqrt(.Machine$double.eps), 
-			   nlminb = nlminb.control(iter.max = 200L, eval.max = 500L), 
-			   plot.it = FALSE, keepXYK = TRUE)
+varComp.control(optMethod = c("nlminb", "polyoptim"), verbose = FALSE, 
+	start = NULL, REML = TRUE, information = informationTypes, 
+	boundary.eps = 5e-04, nlminb = nlminb.control(iter.max = 200L, 
+	eval.max = 500L), polyoptim = polyoptim.control(), 
+	plot.it = FALSE, keepXYK = TRUE)
 nlminb.control(eval.max = 200L, iter.max = 150L, trace = 0L, abs.tol = 0, 
-               rel.tol = 1e-10, x.tol = 1.5e-08, xf.tol = 2.2e-14, step.min = 1, 
-			   step.max = 1, sing.tol = rel.tol, ...)
+	rel.tol = 1e-10, x.tol = 1.5e-08, xf.tol = 2.2e-14, step.min = 1, 
+	step.max = 1, sing.tol = rel.tol, ...)
+polyoptim.control(solver = "polyroot", eigenvalue.eps = sqrt(.Machine$double.eps), 
+	imaginary.eps = sqrt(.Machine$double.eps), multi.precision = TRUE, 
+	bits = 120L, ...)				
 informationTypes
 }
 %- maybe also 'usage' for other objects documented here.
@@ -43,9 +45,8 @@ informationTypes
   \item{boundary.eps}{
 	A small positive number. If the parameter estimates fall below this number, additional checking will be performed to examine if the parameter estimate hits the lower boundary (0) of the parameter space. 
 }
-  \item{eigenvalue.eps}{A small positive number. This is only used when \code{optMethod='polyroot'}. Eigenvalues of any covariance matrix smaller than \code{eigenvalue.eps} will be treated as zero. 
-}
-  \item{imaginary.eps}{A small positive number. This is only used when \code{optMethod='polyroot'}. If absolute imaginary part of a polynomial root is less than \code{imaginary.eps}, the root will be treated as a real number. 
+  \item{polyoptim}{
+	A list of control arguments for the \code{optMethod=='polyoptim'} method. Names of the list should be a subset of the formal arguments of \code{polyoptim.control} explained below. 
 }
   \item{nlminb}{
 	A list of arguments to be passed to \code{\link[stats:nlminb]{stats::nlminb}}. This is most conveniently specified through \code{\link{nlminb.control}}. 
@@ -58,6 +59,15 @@ informationTypes
 }  
   \item{eval.max, iter.max, trace, abs.tol, rel.tol, x.tol, xf.tol, step.min, step.max, sing.tol, \dots}{ The same as in \code{\link[stats:nlminb]{stats::nlminb}}. 
 }
+  \item{solver}{A character scalar specifying how to solve a polynomial equaltion. Allowable values are \code{c("polyroot", "eigen", "bracket"}
+}
+  \item{eigenvalue.eps}{A positive numeric scalar. In the restricted model (after removing fixed effects), eigenvalues of the random effect covariance matrices with absolute value less than this cutoff will be treated as zero. 
+}
+  \item{imaginary.eps}{A positive numeric scalar. If the polynomial solver produced complex roots, then when the absolute value of the imaginary part of a root is less than this cutoff, the root will be treated as a real root. 
+}
+  \item{multi.precision}{A logical scalar. When this is \code{TRUE}, then multi-precision rational approximation will be performed before starting polynomial manipulations. 
+}
+  \item{bits}{A positive integer. Currently not used.}
 }
 \details{
 The objective function is always the profiled restricted log likelihood function, where the error variance is profiled out from the REML function. The parameterization being used is the ratio of each variance component to the error variance. Non-negativity constraints are imposed on such ratios. 

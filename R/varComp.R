@@ -364,6 +364,13 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 		null.preml=.5*(
 		  -n*log(crossprod(y)) -n -n*log(2*pi)-n*log(n)
 		)
+		null.preml.fun=function(tau=numeric(0L)){
+			if(length(tau)>0L) stop('wrong number of variance components')
+		}
+		tmp.bd=body(null.preml.fun)
+		tmp.bd[[3L]]=call('return', null.preml)
+		body(null.preml.fun)=tmp.bd
+		environment(null.preml.fun)=globalenv()
 
 	  ans=list(
 	    ## varComp.fit specific block
@@ -372,7 +379,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 		hessian=matrix(numeric(0L), 0L, 0L),
 		sigma2=drop(null.sig2), 
 		varComps=numeric(0),
-		n.iter=0L, PREML=drop(null.preml),
+		n.iter=0L, PREML=drop(null.preml), PREML.fun=null.preml.fun,
 		X.Q2=Q2, 
 		residual.contrast=y, 
 		working.cor=vector('list', 0L),
@@ -641,6 +648,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
   vc = drop(tau*sigma2)
   names(vc)=nm
   if(optMethod=='polyoptim') attr(vc,'all.candidates')=drop(candidates*sigma2)
+  formals(obj)=list(tau=tau)
   ans=list(
 	## varComp.fit specific block
 	parms=tau, 
@@ -648,7 +656,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	hessian=structure(hess(tau), dimnames=list(nm,nm)),
 	sigma2=drop(sigma2), 
 	varComps=vc,
-	n.iter=n.nr, PREML=PREML(),
+	n.iter=n.nr, PREML=PREML(), PREML.fun=obj, 
 	X.Q2=Q2, 
 	residual.contrast=y, 
 	working.cor=structure(k, names=nm),

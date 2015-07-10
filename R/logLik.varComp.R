@@ -1,5 +1,8 @@
-logLik.varComp=function(object, ...)
+logLik.varComp=function(object, FUNCTION=FALSE, ...)
 {
+	if(isTRUE(FUNCTION)){
+		return(object$PREML.fun)
+	}
 	REML=object$control$REML
 	if(!isTRUE(REML)) .NotYetImplemented()
 	val=object$PREML

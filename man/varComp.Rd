@@ -110,6 +110,7 @@ In the case where \code{doFit} is \code{TRUE}, the following components will als
 	\item {\code{varComps}}: a named numeric vector of variance components. These are the same as \code{parms} times \code{sigma2}. 
 	\item {\code{n.iter}}: the number of iterations during fitting. 
 	\item {\code{PREML}}: the final maximized PREML function value. 
+	\item {\code{PREML.fun}}: the PREML function with one argument \code{tau} being maximized, where \code{tau} is a numeric vector of the ratios of random effect (other than the residual error) variances to the error variance. 
 	\item {\code{X.Q2}}: a matrix, when left-multiplied to the response variable, produces the residual contrasts. 
 	\item {\code{residual.contrast}}: a numeric vector of residual contrasts with \code{length{Y} - qr(X)$rank} elements. 
 	\item {\code{working.cor}}: the list of individual variance-covariance matrices, whose weighted sum is the marginal variance-covariance matrix of the residual contrast. 

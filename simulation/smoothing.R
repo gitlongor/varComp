@@ -31,13 +31,19 @@ Z.cs = cs$Zs
 K.cs = tcrossprod(Z.cs)
 Z.cs.normalized = cholRoot(normalizeTrace(K.cs))
 
-
-B.co=bsplineS(x, breaks=knots, norder=4, nderiv=0, returnMatrix=FALSE)
-Omega.co=bsplinepen(create.bspline.basis(rangeval = range(knots), breaks=knots, norder=4), Lfdobj = 2)
-eig.O.co=eigen(Omega.co, symmetric = TRUE)
-X.co = B.co%*%eig.O.co$vectors[,-seq(nknots+2)]
-Z.co = B.co%*%eig.O.co$vectors[,seq(nknots+2)]/sqrt(eig.O.co$values[seq(nknots+2)])
-K.co=tcrossprod(Z.co)
+if(FALSE){
+	B.co=bsplineS(x, breaks=knots, norder=4, nderiv=0, returnMatrix=FALSE)
+	Omega.co=bsplinepen(create.bspline.basis(rangeval = range(knots), breaks=knots, norder=4), Lfdobj = 2)
+	eig.O.co=eigen(Omega.co, symmetric = TRUE)
+	X.co = B.co%*%eig.O.co$vectors[,-seq(nknots+2)]
+	Z.co = B.co%*%eig.O.co$vectors[,seq(nknots+2)]/sqrt(eig.O.co$values[seq(nknots+2)])
+	K.co=tcrossprod(Z.co)
+}else{
+	X.co=X
+	Z.co = approx.Z(smspline(knots), knots, x)
+	K.co = tcrossprod(Z.co)
+	Z.co.normalized = cholRoot(normalizeTrace(K.co))
+}
 
 (fit1.cs=varComp(y1~x, varcov=list(K.cs), control=list(start=1e-3, plot.it=TRUE)))
 (fit1.cs.noNorm=varComp(y1~x, varcov=list(K.cs), control=list(start=1e-3, plot.it=TRUE), normalizeTrace=FALSE))
@@ -45,7 +51,7 @@ K.co=tcrossprod(Z.co)
 (fit1.co=varComp(y1~x, varcov=list(K.co), control=list(start=1e-3, plot.it=TRUE)))
 (fit1.co=varComp(y1~x, varcov=list(K.co), control=list(start=1e4, plot.it=TRUE)))
 
-(fit1.cs.po=varComp(y1~x, varcov=list(K.cs), control=varComp.control('po', plot.it=TRUE))) #decartes=2
+#(fit1.cs.po=varComp(y1~x, varcov=list(K.cs), control=varComp.control('po', plot.it=TRUE))) #decartes=2
 (fit1.co.po=varComp(y1~x, varcov=list(K.co), control=list('po', plot.it=TRUE)))
 coef(fit1.co.po,'var.ratio')
 
@@ -53,7 +59,7 @@ coef(fit1.co.po,'var.ratio')
 (fit2.cs=varComp(y2~x, varcov=list(K.cs), control=list(start=1e4, plot.it=TRUE)))
 (fit2.co=varComp(y2~x, varcov=list(K.co), control=list(start=1e-3, plot.it=TRUE)))
 (fit2.co=varComp(y2~x, varcov=list(K.co), control=list(start=1e4, plot.it=TRUE)))
-(fit2.cs.po=varComp(y2~x, varcov=list(K.cs), control=varComp.control('po', plot.it=TRUE))) #decartes=2
+#(fit2.cs.po=varComp(y2~x, varcov=list(K.cs), control=varComp.control('po', plot.it=TRUE))) #decartes=2
 (fit2.co.po=varComp(y2~x, varcov=list(K.co), control=list('po', plot.it=TRUE)))
 coef(fit2.co.po,'var.ratio')
 
@@ -61,7 +67,7 @@ coef(fit2.co.po,'var.ratio')
 (fit3.cs=varComp(y3~x, varcov=list(K.cs), control=list(start=1e4, plot.it=TRUE)))
 (fit3.co=varComp(y3~x, varcov=list(K.co), control=list(start=1e-3, plot.it=TRUE)))
 (fit3.co=varComp(y3~x, varcov=list(K.co), control=list(start=1e4, plot.it=TRUE)))
-(fit3.cs.po=varComp(y3~x, varcov=list(K.cs), control=list('po', plot.it=TRUE)))
+#(fit3.cs.po=varComp(y3~x, varcov=list(K.cs), control=list('po', plot.it=TRUE)))
 (fit3.co.po=varComp(y3~x, varcov=list(K.co), control=list('po',start=1e4, plot.it=TRUE)))
 #coef(fit3.cs.po,'var.ratio')
 coef(fit3.co.po,'var.ratio')
@@ -70,7 +76,7 @@ coef(fit3.co.po,'var.ratio')
 (fit4.cs=varComp(y4~x, varcov=list(K.cs), control=list(start=1e4, plot.it=TRUE)))
 (fit4.co=varComp(y4~x, varcov=list(K.co), control=list(start=1e-3, plot.it=TRUE)))
 (fit4.co=varComp(y4~x, varcov=list(K.co), control=list(start=1e4, plot.it=TRUE)))
-(fit4.cs.po=varComp(y4~x, varcov=list(K.cs), control=list('po',plot.it=TRUE)))
+#(fit4.cs.po=varComp(y4~x, varcov=list(K.cs), control=list('po',plot.it=TRUE)))
 (fit4.co.po=varComp(y4~x, varcov=list(K.co), control=list('po',plot.it=TRUE)))
 coef(fit4.co.po,'var.ratio')
 

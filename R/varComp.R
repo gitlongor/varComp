@@ -25,13 +25,14 @@ nlminb.control=function(
 	, class = 'nlminb.control')
 }
 
-polyoptim.control=function(solver='polyroot', eigenvalue.eps = sqrt(.Machine$double.eps), imaginary.eps = sqrt(.Machine$double.eps), multi.precision=TRUE, bits=120L ,...)
+polyoptim.control=function(solver='polyroot', eigenvalue.eps = sqrt(.Machine$double.eps), imaginary.eps = sqrt(.Machine$double.eps), multi.precision=TRUE, eps=1e-8, bits=120L ,...)
 {
-	solver = match.arg(solver, c('polyroot', 'eigen', 'bracket'))
+	solver = match.arg(solver, c('polyroot', 'eigen', 'bisection'))
 	structure(list(	solver=solver, 
 					eigenvalue.eps = eigenvalue.eps, 
 					imaginary.eps = imaginary.eps, 
 					multi.precision=isTRUE(multi.precision), 
+					eps = max(1e-22, eps), 
 					bits=as.integer(max(2L,bits)),
 					...),
 			 class = 'polyoptim.control')
@@ -549,7 +550,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	  if(nSign.changes==0L){
 		candidates=numeric(0L)
 	  }else {
-		roots = solve(numerator(ans.rational), method=polyoptim.control$solver)
+		roots = solve(numerator(ans.rational), method=polyoptim.control$solver, eps=polyoptim.control$eps)
 		if(nSign.changes==1L){
 			tmp=which(Re(roots)>=0)
 			if(length(tmp)==0){

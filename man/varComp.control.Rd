@@ -22,7 +22,7 @@ nlminb.control(eval.max = 200L, iter.max = 150L, trace = 0L, abs.tol = 0,
 	step.max = 1, sing.tol = rel.tol, ...)
 polyoptim.control(solver = "polyroot", eigenvalue.eps = sqrt(.Machine$double.eps), 
 	imaginary.eps = sqrt(.Machine$double.eps), multi.precision = TRUE, 
-	bits = 120L, ...)				
+	eps = 1e-8, bits = 120L, ...)				
 informationTypes
 }
 %- maybe also 'usage' for other objects documented here.
@@ -59,13 +59,15 @@ informationTypes
 }  
   \item{eval.max, iter.max, trace, abs.tol, rel.tol, x.tol, xf.tol, step.min, step.max, sing.tol, \dots}{ The same as in \code{\link[stats:nlminb]{stats::nlminb}}. 
 }
-  \item{solver}{A character scalar specifying how to solve a polynomial equaltion. Allowable values are \code{c("polyroot", "eigen", "bracket"}
+  \item{solver}{A character scalar specifying how to solve a polynomial equaltion. Allowable values are \code{c("polyroot", "eigen", "bisection"}. See details. 
 }
   \item{eigenvalue.eps}{A positive numeric scalar. In the restricted model (after removing fixed effects), eigenvalues of the random effect covariance matrices with absolute value less than this cutoff will be treated as zero. 
 }
   \item{imaginary.eps}{A positive numeric scalar. If the polynomial solver produced complex roots, then when the absolute value of the imaginary part of a root is less than this cutoff, the root will be treated as a real root. 
 }
   \item{multi.precision}{A logical scalar. When this is \code{TRUE}, then multi-precision rational approximation will be performed before starting polynomial manipulations. 
+}
+  \item{eps}{A small positive numerical scalar. Currently, this is only used when \code{solver='bisection'}. Then the length of the interval containing potential REML estimate is less than \code{eps}, the bisection process will stop and return the mid-point of the interval as the final estimate. 
 }
   \item{bits}{A positive integer. Currently not used.}
 }
@@ -74,8 +76,15 @@ The objective function is always the profiled restricted log likelihood function
 
 The \code{information} argument specifies the (approximate) Hessian matrix to be used during optimization. Available choices are \code{"EI"} (expected information), \code{"OI"} (observed information), \code{"AEI"} (approximate expected information), \code{"AOI"} (approximate observed information), and \code{"WAI"} (weighted average information). The approximate versions of \code{"EI"} and \code{"OI"} replace the more computationally demanding trace terms by their realized counter-parts that are unbiased for the trace, and the \code{"WAI"} is similar to the average-information of Gilmour (1995) that cancels such terms, except that the latter reference is based on unprofiled REML function rather than profiled REML. The choice of information only affects the speed and the stability of fitting. As long as the objective function is well behaved, the parameter estimates should not be affected by which information matrix is used during fitting. 
 
-Both \code{varComp.control} and \code{nlminb.control} are simply a wrapper of the input arguments. 
+When \code{optMethod='polyoptim'}, global REML estimates are obtained by solving an equivalent polynomial. This is especially helpful when there are multiple local maxima of the profiled REML function. When \code{solver='polyroot'}, the \code{\link{polyroot}} function in the \code{base} package will be used to simultaneously find all roots (including complex ones), which are then post-processed to only keep non-negative real roots. When \code{solver='eigen'}, the eigenvalues of the companion matrix will be computed, which include all roots (including complexed ones). When \code{solver='bisection'}, a bisection process will be performed on the interval \code{(0, upperBound)}, where \code{upperBound} is found through \code{\link[bigPolyRat:uBound]{uBound}}. This requires the computation of \code{\link[bigPolyRat:sturm]{Sturm}} sequences that can be slow when \code{multi.precision=TRUE}, but will avoid most numerical failures of \code{polyroot} and \code{\link[Matrix:eigen]{eigen}}. 
+
+\code{varComp.control},  \code{nlminb.control} and \code{polyoptim.control} are simply a wrapper of the input arguments. 
 }
+
+\section{Warning}{
+ When \code{multi.precision=TRUE}, if the rank of the covariance matrix of the random effect (other than the error) is large, the computation may demand a large amount of memory. If further \code{solver='bisection'}, the computation can be very slow. 
+}
+
 \value{
 A named list of the input arguments. 
 }

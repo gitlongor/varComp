@@ -1,11 +1,11 @@
 p.value <-
-function(x) UseMethod('p.value')
+function(x,...) UseMethod('p.value')
 
-p.value.htest = function(x) x$p.value
+p.value.htest = function(x,...) x$p.value
 p.value.default = p.value.htest
 
 p.value.varComp.test <-
-function(x)
+function(x,...)
 {
 #Extracting p-values from objects from varComp.test. 
 #i.	x: an object of class varComp.test
@@ -31,7 +31,7 @@ function(x)
   p
 }
 
-p.value.varCompFixEf=function(x)
+p.value.varCompFixEf=function(x,...)
 {
 	Aov=attr(x, 'anova')
 	ans=Aov[, 'Pr(>|t|)']

@@ -12,16 +12,18 @@ Extracting p-values
 \code{p.value} is a generic function for extracting p-values of tests. 
 }
 \usage{
-p.value(x)
-\method{p.value}{default}(x)
-\method{p.value}{htest}(x)
-\method{p.value}{varComp.test}(x)
-\method{p.value}{varCompFixEf}(x)
+p.value(x,...)
+\method{p.value}{default}(x,...)
+\method{p.value}{htest}(x,...)
+\method{p.value}{varComp.test}(x,...)
+\method{p.value}{varCompFixEf}(x,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
 	An R object from which to extract p-values. 
+}
+  \item{\dots}{Additional arguments that might be used by individual methods.
 }
 }
 \details{

@@ -21,13 +21,13 @@ wchibarsq(V)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-	\item{q}{ A vector of quantiles, as in \code{\link[stats:pchisq]{stats::pchisq}}.
+	\item{q}{ A vector of quantiles, as in \code{\link[stats:Chisquare]{stats::pchisq}}.
 }
   \item{V}{ A positive-definite matrix, defining the distance measure used when projecting onto the cone. 
 }
-	\item{lower.tail}{logical, the same as in \code{\link[stats:pchisq]{stats::pchisq}}. 
+	\item{lower.tail}{logical, the same as in \code{\link[stats:Chisquare]{stats::pchisq}}. 
 }
-	\item{log.p}{logical, the same as in \code{\link[stats:pchisq]{stats::pchisq}}. 
+	\item{log.p}{logical, the same as in \code{\link[stats:Chisquare]{stats::pchisq}}. 
 }
   \item{order}{
 	A positive integer vector of the order of moments to be computed.
@@ -49,7 +49,7 @@ Akio Kudo (1963) A multivariate analogue of the one-sided test.
 }
 
 \seealso{
-	\code{\link[stats:pchisq]{stats::pchisq}}
+	\code{\link[stats:Chisquare]{stats::pchisq}}
 }
 \examples{
 set.seed(203490L)

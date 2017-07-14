@@ -91,7 +91,7 @@ A list of class \code{varCompTest.control} with length equal to the length \code
 Long Qu
 }
 \seealso{
-	\code{\link{varComp.test}}, \code{\link[CompQuadForm:davies]{CompQuadForm::davies}}, \code{\link[RLRsim:RLRTSim]{RLRsim::RLRTSim}}
+	\code{\link{varComp.test}}, \code{\link[CompQuadForm:davies]{CompQuadForm::davies}}, \code{\link[RLRsim:LRTSim]{RLRsim::RLRTSim}}
 }
 %\examples{
 %

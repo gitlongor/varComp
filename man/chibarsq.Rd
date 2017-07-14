@@ -21,7 +21,7 @@ wchibarsq(V)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-	\item{q}{ A vector of quantiles, as in \code{\link[stats:pchisq]{stats::pchisq}}.
+	\item{q}{ A vector of quantiles, as in \code{\link[stats:Chisquare]{stats::pchisq}}.
 }
   \item{V}{ A positive-definite matrix, defining the distance measure used when projecting onto the cone. 
 }

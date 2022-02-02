@@ -16,21 +16,26 @@ function(y, varcov, start=rep(0, length(varcov)), lower.bound=-Inf, restricted=T
   u=sapply(lapply(LIk,'%*%',LIy),crossprod,LIy)
 
   if(lower.bound<0 && is.infinite(lower.bound)){
-    ans0=solve(S, u) ## FIXME: add error handler
+    ans0=ginv(S)%*%u  #solve(S, u) ## FIXME: add error handler
   }else{
     # require(quadprog)
-    qp.rslt=tryCatch(solve.QP(Dmat=crossprod(S), dvec=crossprod(S,u), Amat=rbind(diag(1,nK),0), bvec=rep(lower.bound,nK), meq=0L, factorized=FALSE), 
-      error=function(e)  {
-        if(e$message=='matrix D in quadratic function is not positive definite!'){
-          solve.QP(Dmat=as.matrix(nearPD(crossprod(S))$mat), dvec=crossprod(S,u), Amat=rbind(diag(1,nK),0), bvec=rep(lower.bound,nK), meq=0L, factorized=FALSE) 
-        }else{ #truncate unconstrained solution and rescale
-          unconstr=solve(S, u) 
-		  s.unconstr=sum(unconstr)
-		  unconstr[unconstr<lower.bound]=lower.bound
-		  list(solution=unconstr / sum(unconstr) * s.unconstr)
-        }
-      }
-    )
+	Dmat=crossprod(S); dvec=crossprod(S,u); Amat=rbind(diag(1,nK),0);bvec=rep(lower.bound,nK)
+	repeat{
+		qp.rslt=try(solve.QP(Dmat=Dmat, dvec=dvec, Amat=Amat, bvec=bvec, meq=0L, factorized=FALSE), silent=TRUE)
+		if(!inherits(qp.rslt, 'try-error')) break
+		if(attr(qp.rslt, 'condition')$message==
+			'matrix D in quadratic function is not positive definite!'){
+				Dmat=as.matrix(nearPD(crossprod(S))$mat)
+		}else if(attr(qp.rslt, 'condition')$message==
+			'constraints are inconsistent, no solution!'){ 
+				#truncate unconstrained solution and rescale
+				unconstr=ginv(S)%*%u 
+				s.unconstr=sum(unconstr)
+				unconstr[unconstr<lower.bound]=lower.bound
+				qp.rslt=list(solution=unconstr / sum(unconstr) * s.unconstr)
+				break
+		}else break
+	}
     ans0=qp.rslt$solution
   }
   ans=ans0[-nK-1L]/ans0[nK+1L]

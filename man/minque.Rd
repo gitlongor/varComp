@@ -7,7 +7,7 @@
 This function computes the minimum norm quadratic unbiased estimate of variance components. Typically this is used as starting values of REML. 
 }
 \usage{
-minque(y, varcov, start = rep(0, length(k)), lower.bound = -Inf, restricted = TRUE)
+minque(y, varcov, start = rep(0, length(varcov)), lower.bound = -Inf, restricted = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

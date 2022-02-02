@@ -1,8 +1,8 @@
 \name{kernels}
 \alias{ibs}
 \alias{IBS}
-\alias{am}
-\alias{AM}
+%\alias{am}
+%\alias{AM}
 \alias{lin0}
 \alias{Lin0}
 \alias{quad1}
@@ -20,8 +20,8 @@
 	These are the functions that might be used in computing pairwise inter-individual similarities based on their single nucleotide polymorphism (SNP) genotypes. 
 }
 \usage{
-am(x)
-AM(x)
+%am(x)
+%AM(x)
 ibs(x)
 IBS(x)
 lin0(x)
@@ -47,7 +47,7 @@ Polyk(x,c=0,d=1)
 \details{
 These functions compute the pairwise similarities among rows of \code{x}. Lower-case versions are more useful in the formula interface to specify random genetic effects. Upper-case versions can be used to directly compute the genetic similarity matrix. 
 
-\code{am} and \code{AM} calculate the allele-matching kernel, and \code{AM} is based on \code{\link[SPA3G:KERNEL]{SPA3G:::KERNEL}}. 
+%\code{am} and \code{AM} calculate the allele-matching kernel, and \code{AM} is based on \code{\link[SPA3G:KERNEL]{SPA3G:::KERNEL}}. 
 
 \code{ibs} and \code{IBS} compute the identity-by-descent (IBS) kernel. \code{IBS} is computed as \cr
 \code{1 - as.matrix(dist(x, method='manhattan') * .5 /max(1, ncol(x)) )}. 
@@ -75,16 +75,15 @@ Long Qu
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-\code{\link{cholRoot}}, \code{\link{normalizeTrace}}, \code{\link[stats:dist]{stats::dist}}, \code{\link[SPA3G:KERNEL]{SPA3G:::KERNEL}}, \code{\link{varComp}}
+\code{\link{cholRoot}}, \code{\link{normalizeTrace}}, \code{\link[stats:dist]{stats::dist}}, 
+%\code{\link[SPA3G:KERNEL]{SPA3G:::KERNEL}}, 
+\code{\link{varComp}}
 }
 \examples{
 set.seed(2345432L)
 x=matrix(sample(2, 50L, replace=TRUE), 10L)  
 IBS(x)
 range(tcrossprod(ibs(x)) - IBS(x)  )
-
-AM(x)
-range(tcrossprod(am(x)) - AM(x)  )
 
 Lin0(x)
 range(tcrossprod(lin0(x)) - Lin0(x)  )

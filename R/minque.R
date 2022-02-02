@@ -1,5 +1,5 @@
 minque <-
-function(y, varcov, start=rep(0, length(k)), lower.bound=-Inf, restricted=TRUE)
+function(y, varcov, start=rep(0, length(varcov)), lower.bound=-Inf, restricted=TRUE)
 { 
 	k=varcov; varRatio=start
   if(!isTRUE(restricted)) .NotYetImplemented()
@@ -23,8 +23,11 @@ function(y, varcov, start=rep(0, length(k)), lower.bound=-Inf, restricted=TRUE)
       error=function(e)  {
         if(e$message=='matrix D in quadratic function is not positive definite!'){
           solve.QP(Dmat=as.matrix(nearPD(crossprod(S))$mat), dvec=crossprod(S,u), Amat=rbind(diag(1,nK),0), bvec=rep(lower.bound,nK), meq=0L, factorized=FALSE) 
-        }else{
-          e
+        }else{ #truncate unconstrained solution and rescale
+          unconstr=solve(S, u) 
+		  s.unconstr=sum(unconstr)
+		  unconstr[unconstr<lower.bound]=lower.bound
+		  list(solution=unconstr / sum(unconstr) * s.unconstr)
         }
       }
     )

@@ -541,7 +541,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
   eval(preprocInfo)
   updateNegGrad()
   updateNegHess()
-  sigma2=crossprod(LIy)/n
+  sigma2=drop(crossprod(LIy)/n)
 	
   if(isTRUE(plot.it)){
 	taus=exp(seq(log(1e-9), log(2*tau), length=500))
@@ -559,7 +559,7 @@ varComp.fit = function(Y, X=matrix(0,length(Y),0L), K, control=varComp.control()
 	parms=structure(tau, names=nm),
 	gradients=structure(-negGrad, names=nm), 
 	hessian=structure(hess(tau), dimnames=list(nm,nm)),
-	sigma2=drop(sigma2), 
+	sigma2=sigma2, 
 	varComps=structure(drop(tau*sigma2), names=nm),
 	n.iter=n.nr, PREML=PREML(),
 	X.Q2=Q2, 
